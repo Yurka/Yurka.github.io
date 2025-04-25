@@ -15,18 +15,12 @@
                 const user = tg.initDataUnsafe.user;
                 
                 if (user) {
-                    // Set user name
                     const userNameElement = document.getElementById('userName');
                     userNameElement.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
                     
-                    // Set user photo if available
                     const userPhotoElement = document.getElementById('userPhoto');
                     if (user.photo_url) {
                         userPhotoElement.src = user.photo_url;
-                    } else {
-                        // Display a placeholder if no photo is available
-                        userPhotoElement.src = 'https://via.placeholder.com/100';
-                        userPhotoElement.alt = 'No photo available';
                     }
                 }
             }
@@ -110,16 +104,15 @@
     </style>
 </head>
 <body>
+<div class="logo-container">
+    <div class="eclipse-logo fade-in"></div>
+</div>
 <div class="user-info fade-in">
     <img id="userPhoto" class="user-photo" alt="User Photo">
     <div id="userName" class="user-name"></div>
 </div>
-<div class="logo-container">
-    <div class="eclipse-logo fade-in"></div>
-</div>
 
 <script>
-    // Initialize Telegram Mini App
     let tg = window.Telegram.WebApp;
     tg.expand();
     tg.ready();
