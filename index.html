@@ -113,6 +113,10 @@
 </div>
 
 <div class="container my-5">
+    <!-- Optional: show a little greeting above the buttons -->
+    <div class="text-center mb-3 text-white">
+        Hello, <span id="userName"></span>
+    </div>
     <form id="trainingForm">
         <div class="d-flex justify-content-center gap-3">
             <button type="button" id="speedBtn" class="btn btn-primary">
@@ -125,19 +129,37 @@
     </form>
 </div>
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         if (window.Telegram && window.Telegram.WebApp) {
             const tg = window.Telegram.WebApp;
+            const user = tg.initDataUnsafe.user;  // your current user
 
-            function confirmAndSend(label) {
-                if (confirm(`Send "${label}" request?`)) {
-                    // sendData will post back to your bot as a message
-                    tg.sendData(JSON.stringify({training: label}));
-                }
+            // fill in name/photo if not already done
+            if (user) {
+                const nameEl = document.getElementById('userName');
+                nameEl.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
             }
 
-            // Wire up the buttons
+            // confirm + send both training choice & user info
+            function confirmAndSend(label) {
+                if (!user) return;
+                if (!confirm(`Send "${label}" request?`)) return;
+
+                const payload = {
+                    training: label,
+                    user: {
+                        id: user.id,
+                        first_name: user.first_name,
+                        last_name: user.last_name || null,
+                        username: user.username || null
+                    }
+                };
+
+                tg.sendData(JSON.stringify(payload));
+            }
+
             document.getElementById('speedBtn')
                 .addEventListener('click', () => confirmAndSend('speed training'));
 
@@ -146,6 +168,7 @@
         }
     });
 </script>
+
 
 <script>
     let tg = window.Telegram.WebApp;
