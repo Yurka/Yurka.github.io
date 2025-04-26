@@ -113,61 +113,86 @@
 </div>
 
 <div class="container my-5">
-    <!-- Optional: show a little greeting above the buttons -->
     <div class="text-center mb-3 text-white">
         Hello, <span id="userName"></span>
     </div>
-    <form id="trainingForm">
-        <div class="d-flex justify-content-center gap-3">
-            <button type="button" id="speedBtn" class="btn btn-primary">
-                Speed Training
-            </button>
-            <button type="button" id="strengthBtn" class="btn btn-success">
-                Strength Training
-            </button>
-        </div>
-    </form>
+    <div class="d-flex justify-content-center gap-3">
+        <button type="button" id="speedBtn" class="btn btn-outline-light">
+            Speed Training
+        </button>
+        <button type="button" id="strengthBtn" class="btn btn-outline-light">
+            Strength Training
+        </button>
+    </div>
 </div>
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        if (window.Telegram && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            const user = tg.initDataUnsafe.user;  // your current user
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!window.Telegram?.WebApp) return;
+        const tg = window.Telegram.WebApp;
+        const user = tg.initDataUnsafe.user || {};
 
-            // fill in name/photo if not already done
-            if (user) {
-                const nameEl = document.getElementById('userName');
-                nameEl.textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-            }
-
-            // confirm + send both training choice & user info
-            function confirmAndSend(label) {
-                if (!user) return;
-                if (!confirm(`Send "${label}" request?`)) return;
-
-                const payload = {
-                    training: label,
-                    user: {
-                        id: user.id,
-                        first_name: user.first_name,
-                        last_name: user.last_name || null,
-                        username: user.username || null
-                    }
-                };
-
-                tg.sendData(JSON.stringify(payload));
-
-                confirm(`Send: ` + JSON.stringify(payload));
-            }
-
-            document.getElementById('speedBtn')
-                .addEventListener('click', () => confirmAndSend('speed training'));
-
-            document.getElementById('strengthBtn')
-                .addEventListener('click', () => confirmAndSend('strength training'));
+        // show user name
+        if (user.first_name) {
+            document.getElementById('userName').textContent =
+                user.first_name + (user.last_name ? ' ' + user.last_name : '');
         }
+
+        // keep track of selection
+        let selected = null;
+        const mainBtn = tg.MainButton;
+
+        // helper to update MainButton label & visibility
+        function updateMain() {
+            if (selected) {
+                mainBtn
+                    .setText(`Send ${selected === 'speed' ? 'Speed' : 'Strength'} Training`)
+                    .show();
+            } else {
+                mainBtn.hide();
+            }
+        }
+
+        // wire up local buttons
+        document.getElementById('speedBtn')
+            .addEventListener('click', () => {
+                selected = 'speed';
+                updateMain();
+            });
+
+        document.getElementById('strengthBtn')
+            .addEventListener('click', () => {
+                selected = 'strength';
+                updateMain();
+            });
+
+        // handle MainButton press
+        mainBtn.onClick(() => {
+            if (!selected) return;
+
+            const label = selected === 'speed'
+                ? 'speed training'
+                : 'strength training';
+
+            if (!confirm(`Send "${label}" request?`)) return;
+
+            // payload with both choice & user info
+            const payload = {
+                training: label,
+                user: {
+                    id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name || null,
+                    username: user.username || null
+                }
+            };
+
+            tg.sendData(JSON.stringify(payload));
+        });
+
+        // initially hide
+        mainBtn.hide();
     });
 </script>
 
