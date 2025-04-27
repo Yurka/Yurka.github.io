@@ -133,13 +133,11 @@
         const tg = window.Telegram.WebApp;
         const user = tg.initDataUnsafe.user || {};
 
-        // show user name
         if (user.first_name) {
             document.getElementById('userName').textContent =
                 user.first_name + (user.last_name ? ' ' + user.last_name : '');
         }
 
-        // keep track of selection
         let selected = null;
         const mainBtn = tg.MainButton;
 
@@ -154,7 +152,6 @@
             }
         }
 
-        // wire up local buttons
         document.getElementById('speedBtn')
             .addEventListener('click', () => {
                 selected = 'speed';
@@ -175,7 +172,7 @@
                 ? 'speed training'
                 : 'strength training';
 
-            if (!confirm(`Send "${label}" request?`)) return;
+            // if (!confirm(`Send "${label}" request?`)) return;
 
             // payload with both choice & user info
             const payload = {
