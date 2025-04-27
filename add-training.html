@@ -113,7 +113,7 @@
         text: 'Main Button 01'
     });
     Telegram.WebApp.MainButton.onClick(function () {
-        Telegram.WebApp.MainButton.sendData(JSON.stringify({"testfield": "testdata"}));
+        Telegram.WebApp.sendData(JSON.stringify({"testfield": "testdata"}));
         Telegram.WebApp.showAlert('Main Button was clicked');
     });
     Telegram.WebApp.MainButton.show();
