@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Telegram Mini App</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+    }
+    input, button {
+      font-size: 1rem;
+      padding: 0.5rem;
+    }
+    button {
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Send Message to Bot</h1>
+
+  <input id="message" type="text" placeholder="Type your message…" />
+  <button id="sendBtn">Send</button>
+
+  <!-- Telegram Web Apps SDK -->
+  <script src="telegram-web-app.js"></script>
+  <script>
+    // Notify Telegram that the web app is ready
+    Telegram.WebApp.ready();
+
+    const btn = document.getElementById('sendBtn');
+    const input = document.getElementById('message');
+
+    btn.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (!text) {
+        Telegram.WebApp.showAlert('Please enter a message.');
+        return;
+      }
+      // Send data back to your bot
+      Telegram.WebApp.sendData(text);
+    });
+  </script>
+</body>
+</html>
